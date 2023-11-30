@@ -1,2 +1,2 @@
 // define as per ORM.
-export class CRUDBase{};
+export class CRUDBase {};

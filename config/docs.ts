@@ -6,9 +6,7 @@ const swaggerDefinition = {
     title: '',
     version: '1.0.0'
   },
-  servers: [
-    
-  ]
+  servers: []
 }
 
 const options = {

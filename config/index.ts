@@ -1,5 +1,5 @@
-import * as swaggerSpecs from './docs';
+import * as swaggerSpecs from './docs'
 
 export {
-    swaggerSpecs
+swaggerSpecs
 }

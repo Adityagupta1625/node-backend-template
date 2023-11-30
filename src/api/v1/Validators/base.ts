@@ -18,7 +18,7 @@ export class InputValiation {
     } catch (e: any) {
       console.log('Caught promise rejection (validation failed). Errors: ', e)
 
-      return res.status(400).send(e);
+      return res.status(400).send(e)
     }
   }
 }
