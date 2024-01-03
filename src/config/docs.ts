@@ -6,13 +6,18 @@ const swaggerDefinition = {
     title: '',
     version: '1.0.0'
   },
-  servers: []
+  servers: [
+    {
+      url: 'http://localhost:8000', // Development server URL
+      description: 'Development Server' // Description of the development server
+    }
+  ]
 }
 
 const options = {
   swaggerDefinition,
   apis: [
-    './src/api/v1/docs/*.yaml'
+    ''
   ]
 }
 

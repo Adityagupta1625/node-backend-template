@@ -5,8 +5,7 @@ import express, {
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import swaggerUI from 'swagger-ui-express'
-import { swaggerSpecs } from '../config'
+import { ConnectToMongo } from './config'
 
 const app = express()
 app.use(cors({ origin: '*' }))
@@ -21,8 +20,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello world!!')
 })
 
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpecs))
-
 app.get('*', (req: Request, res: Response) => {
   return res.status(403).send('Sorry, the page you requested was not found.')
 })
@@ -30,6 +27,8 @@ app.get('*', (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`)
 })
+
+ConnectToMongo()
 
 process.on('unhandledRejection', (err) => {
   console.log(err)
