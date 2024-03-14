@@ -2,11 +2,11 @@ import { type Document, type Model } from 'mongoose'
 import HttpException from './HttpException'
 
 export interface CRUDBaseInterface<T extends Document> {
-  add(data: Partial<T>): Promise<T | void>
-  getAll(query: Object): Promise<T[]>
-  get(query: Object): Promise<T | null>
-  update(id: string, data: Partial<T>): Promise<T>
-  delete(id: string): Promise<void>
+  add: (data: Partial<T>) => Promise<T>
+  getAll: (query: any) => Promise<T[]>
+  get: (query: any) => Promise<T | null>
+  update: (id: string, data: Partial<T>) => Promise<T>
+  delete: (id: string) => Promise<void>
 }
 
 export abstract class CRUDBase<T extends Document>
@@ -18,7 +18,7 @@ export abstract class CRUDBase<T extends Document>
     this.baseModel = baseModel
   }
 
-  public async add(data: Partial<T>): Promise<T | void> {
+  public async add(data: Partial<T>): Promise<T> {
     try {
       const resp = await this.baseModel.create(data)
       return resp
@@ -27,7 +27,7 @@ export abstract class CRUDBase<T extends Document>
     }
   }
 
-  public async getAll(query: Object): Promise<T[]> {
+  public async getAll(query: any): Promise<T[]> {
     try {
       const resp = await this.baseModel.find(query)
       return resp
@@ -36,7 +36,7 @@ export abstract class CRUDBase<T extends Document>
     }
   }
 
-  public async get(query: Object): Promise<T | null> {
+  public async get(query: any): Promise<T | null> {
     try {
       const data = await this.baseModel.findOne(query)
       return data

@@ -1,5 +1,3 @@
-import swaggerSpec from "./docs";
+import swaggerSpec from './docs'
 
-export {
-    swaggerSpec
-}
+export { swaggerSpec }

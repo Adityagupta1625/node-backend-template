@@ -1,6 +1,6 @@
-import { Request, Response } from 'express'
-import { CRUDBaseInterface } from './baseCrud'
-import { type Document} from 'mongoose'
+import { type Request, type Response } from 'express'
+import { type CRUDBaseInterface } from './baseCrud'
+import { type Document } from 'mongoose'
 import { errorHandler } from './errorHandler'
 
 export abstract class BaseController<T extends Document> {
@@ -15,28 +15,28 @@ export abstract class BaseController<T extends Document> {
       await this.CRUDService.add(req.body)
       return res.status(201).json({ message: 'Data added Successfully!!' })
     } catch (e) {
-      return errorHandler(e, res)
+      return await errorHandler(e, res)
     }
   }
 
-  public async getController(
-    req: Request,
-    res: Response
-  ): Promise<Response> {
+  public async getController(req: Request, res: Response): Promise<Response> {
     try {
       const data = await this.CRUDService.getAll(req.query)
       return res.status(200).json(data)
     } catch (e) {
-      return errorHandler(e, res)
+      return await errorHandler(e, res)
     }
   }
 
-  public async getOneController(req: Request, res: Response): Promise<Response> {
+  public async getOneController(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
     try {
       const data = await this.CRUDService.get(req.query)
       return res.status(200).json(data)
     } catch (e) {
-      return errorHandler(e, res)
+      return await errorHandler(e, res)
     }
   }
 
@@ -45,8 +45,7 @@ export abstract class BaseController<T extends Document> {
     res: Response
   ): Promise<Response> {
     try {
-
-      if(typeof req.body.params!=='string'){
+      if (typeof req.body.params !== 'string') {
         return res.status(400).json('Id not provided')
       }
 
@@ -55,7 +54,7 @@ export abstract class BaseController<T extends Document> {
       })
       return res.status(200).json(data)
     } catch (e) {
-      return errorHandler(e, res)
+      return await errorHandler(e, res)
     }
   }
 
@@ -67,7 +66,7 @@ export abstract class BaseController<T extends Document> {
       const data = await this.CRUDService.update(req.params.id, req.body)
       return res.status(200).json(data)
     } catch (e) {
-      return errorHandler(e, res)
+      return await errorHandler(e, res)
     }
   }
 
@@ -79,7 +78,7 @@ export abstract class BaseController<T extends Document> {
       await this.CRUDService.delete(req.params.id)
       return res.status(204).json({ message: 'Deleted Successfully!!' })
     } catch (e) {
-      return errorHandler(e, res)
+      return await errorHandler(e, res)
     }
   }
 }

@@ -3,13 +3,12 @@ import { validateOrReject } from 'class-validator'
 import { type NextFunction, type Request, type Response } from 'express'
 
 export abstract class BaseValidator {
-  private readonly inputObject: any;
+  private readonly inputObject: any
 
   constructor(inputObject: any) {
-    this.inputObject=inputObject
+    this.inputObject = inputObject
   }
 
-  
   public async validateInput(
     req: Request,
     res: Response,

@@ -5,7 +5,7 @@ class HttpException extends Error {
     errorCode: number,
     public readonly message: string | any
   ) {
-    super(message ?? "Internal Server Error")
+    super(message ?? 'Internal Server Error')
     this.errorCode = errorCode ?? 500
   }
 }

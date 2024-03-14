@@ -1,2 +1,2 @@
 import { ConnectToMongo } from './db'
-export {  ConnectToMongo }
+export { ConnectToMongo }
