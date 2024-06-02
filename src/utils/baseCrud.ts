@@ -1,12 +1,15 @@
-import { type Document, type Model } from 'mongoose'
+import { type Document, type Model, type FilterQuery } from 'mongoose'
 import HttpException from './HttpException'
 
 export interface CRUDBaseInterface<T extends Document> {
   add: (data: Partial<T>) => Promise<T>
-  getAll: (query: any) => Promise<T[]>
-  get: (query: any) => Promise<T | null>
-  update: (id: string, data: Partial<T>) => Promise<T>
-  delete: (id: string) => Promise<void>
+  addMany: (data: Partial<T>[]) => Promise<T[]>
+  findAll: (query: FilterQuery<T>) => Promise<T[]>
+  findOne: (query: FilterQuery<T>) => Promise<T | null>
+  updateAll: (query: FilterQuery<T>, data: Partial<T>) => Promise<void>
+  updateOne: (query: FilterQuery<T>, data: Partial<T>) => Promise<T>
+  deleteAll: (query: FilterQuery<T>) => Promise<void>
+  deleteOne: (query: FilterQuery<T>) => Promise<void>
 }
 
 export abstract class CRUDBase<T extends Document>
@@ -27,7 +30,16 @@ export abstract class CRUDBase<T extends Document>
     }
   }
 
-  public async getAll(query: any): Promise<T[]> {
+  public async addMany(data: Partial<T>[]): Promise<T[]> {
+    try {
+      const resp = await this.baseModel.insertMany(data)
+      return resp
+    } catch (e) {
+      throw new HttpException(e?.errorCode, e?.message)
+    }
+  }
+
+  public async findAll(query: FilterQuery<T>): Promise<T[]> {
     try {
       const resp = await this.baseModel.find(query)
       return resp
@@ -36,26 +48,23 @@ export abstract class CRUDBase<T extends Document>
     }
   }
 
-  public async get(query: any): Promise<T | null> {
+  public async findOne(query: FilterQuery<T>): Promise<T | null> {
     try {
       const data = await this.baseModel.findOne(query)
+      if (data === null) throw new HttpException(400, 'Data Not Found!!')
       return data
     } catch (e) {
       throw new HttpException(e?.errorCode, e?.message)
     }
   }
 
-  public async update(id: string, data: Partial<T>): Promise<T> {
+  public async updateOne(query: FilterQuery<T>, data: Partial<T>): Promise<T> {
     try {
-      if (typeof id !== 'string') {
-        throw new HttpException(400, 'Missing parameter')
-      }
-
-      const result = await this.baseModel.findByIdAndUpdate(id, data, {
+      const result = await this.baseModel.findOneAndUpdate(query, data, {
         new: true,
       })
 
-      if (result === null) throw new HttpException(404, 'Resource Not Found!!')
+      if (result === null) throw new HttpException(400, 'Resource not Found!!')
 
       return result
     } catch (e) {
@@ -63,13 +72,30 @@ export abstract class CRUDBase<T extends Document>
     }
   }
 
-  public async delete(id: string): Promise<void> {
+  public async updateAll(
+    query: FilterQuery<T>,
+    data: Partial<T>
+  ): Promise<void> {
     try {
-      if (typeof id !== 'string') {
-        throw new HttpException(400, 'Missing parameter')
-      }
+      await this.baseModel.updateMany(query, data)
+    } catch (e) {
+      throw new HttpException(e?.errorCode, e?.message)
+    }
+  }
 
-      await this.baseModel.findByIdAndDelete(id)
+  public async deleteOne(query: FilterQuery<T>): Promise<void> {
+    try {
+      await this.findOne(query)
+
+      await this.baseModel.findOneAndDelete(query)
+    } catch (e) {
+      throw new HttpException(e?.errorCode, e?.message)
+    }
+  }
+
+  public async deleteAll(query: FilterQuery<T>): Promise<void> {
+    try {
+      await this.baseModel.deleteMany(query)
     } catch (e) {
       throw new HttpException(e?.errorCode, e?.message)
     }

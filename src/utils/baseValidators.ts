@@ -1,27 +1,35 @@
-import { plainToInstance } from 'class-transformer'
-import { validateOrReject } from 'class-validator'
-import { type NextFunction, type Request, type Response } from 'express'
+import HttpException from './HttpException'
+import Ajv, { type Schema } from 'ajv'
+import addFormats from 'ajv-formats'
 
-export abstract class BaseValidator {
-  private readonly inputObject: any
+export class BaseValidator {
+  private readonly schemaObj: Schema
 
-  constructor(inputObject: any) {
-    this.inputObject = inputObject
+  constructor(schemaObj: Schema) {
+    this.schemaObj = schemaObj
   }
 
-  public async validateInput(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | any> {
+  public validateInput(data: any): void {
     try {
-      const dtoInstance = plainToInstance(this.inputObject, req.body)
+      const ajv = new Ajv()
+      addFormats(ajv, { mode: 'full' })
+      const validate = ajv.compile(this.schemaObj)
+      const valid = validate(data)
+      if (valid === false) {
+        if (validate.errors === null || validate.errors === undefined) {
+          throw new HttpException(400, 'Validation error')
+        }
 
-      await validateOrReject(dtoInstance)
+        const errorMessage = validate.errors
+          .map((error) => {
+            return `${error.message}`
+          })
+          .join(', ')
 
-      next()
+        throw new HttpException(400, errorMessage)
+      }
     } catch (e: any) {
-      return res.status(400).json({ message: e })
+      throw new HttpException(e?.errorCode, e?.message)
     }
   }
 }
